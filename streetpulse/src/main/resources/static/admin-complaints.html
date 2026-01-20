@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Complaints</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-bg">
+
+<div class="form-box">
+    <h2>All Complaints</h2>
+
+    <table border="1" width="100%" id="complaintTable">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </table>
+
+    <br>
+    <a href="admin-dashboard.html">⬅ Back to Dashboard</a>
+    <a href="/heatmap.html" class="btn">View Heatmap</a>
+
+</div>
+
+<script>
+    fetch("/admin/complaints")
+        .then(r => r.json())
+        .then(data => {
+            let table = document.getElementById("complaintTable");
+
+            data.forEach(c => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+            <td>${c.id}</td>
+            <td>${c.title}</td>
+            <td>${c.status}</td>
+            <td>
+              <button onclick="updateStatus(${c.id}, 'Resolved')">
+                Mark Resolved
+              </button>
+            </td>
+          `;
+                table.appendChild(row);
+            });
+        });
+
+    function updateStatus(id, status) {
+        fetch(`/admin/complaints/${id}/status?status=${status}`, {
+            method: "PUT"
+        }).then(() => location.reload());
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report Issue - StreetPulse</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="page-bg">
+
+<div class="form-box">
+    <h2 class="center">Report an Issue</h2>
+
+    <!-- ❌ NO action, NO method -->
+    <form id="reportForm">
+
+        <input id="title" type="text" placeholder="Issue Title" required>
+
+        <textarea id="description" placeholder="Description" required></textarea>
+
+        <input id="address" type="text" placeholder=" Address" required>
+
+        <select id="priority">
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+        </select>
+
+        <input id="latitude" type="number" step="any" placeholder="Latitude (optional)">
+        <input id="longitude" type="number" step="any" placeholder="Longitude (optional)">
+
+        <input id="image" type="file" accept="image/*">
+
+        <button type="submit">Submit Report</button>
+    </form>
+
+    <script src="/js/report.js"></script>
+
+</div>
+
+<!-- ✅ JS AT END -->
+<script src="/js/report.js"></script>
+
+</body>
+</html>

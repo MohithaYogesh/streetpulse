@@ -2,12 +2,18 @@ package com.streetpulse.streetpulse.controller;
 
 import com.streetpulse.streetpulse.model.Complaint;
 import com.streetpulse.streetpulse.service.ComplaintService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
-@RequestMapping("/complaints")
+@RequestMapping("/api/complaints")
+@CrossOrigin
 public class ComplaintController {
 
     private final ComplaintService service;
@@ -16,19 +22,31 @@ public class ComplaintController {
         this.service = service;
     }
 
-    @GetMapping
-    public List<Complaint> getAll() {
-        return service.getAll();
-    }
-
+    // ---------- SAVE COMPLAINT (JSON) ----------
     @PostMapping
-    public Complaint create(@RequestBody Complaint c) {
-        return service.save(c);
+    public ResponseEntity<?> create(@RequestBody Complaint c) {
+
+        if (c.getTitle() == null || c.getTitle().isBlank()) {
+            return ResponseEntity.badRequest().body("Title is required");
+        }
+
+        Complaint saved = service.save(c);
+        return ResponseEntity.ok(saved);
     }
 
-    @PutMapping("/{id}/status")
-    public Complaint updateStatus(@PathVariable Long id,
-                                  @RequestParam String status) {
-        return service.updateStatus(id, status);
+    // ---------- UPLOAD IMAGE ----------
+    @PostMapping("/upload")
+    public String uploadImage(@RequestParam("file") MultipartFile file) throws Exception {
+
+        String uploadDir = "uploads/";
+        File dir = new File(uploadDir);
+        if (!dir.exists()) dir.mkdirs();
+
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        Path filePath = Paths.get(uploadDir + fileName);
+
+        Files.copy(file.getInputStream(), filePath);
+
+        return fileName;
     }
 }

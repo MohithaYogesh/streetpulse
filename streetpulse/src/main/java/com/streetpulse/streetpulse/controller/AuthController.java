@@ -2,6 +2,7 @@ package com.streetpulse.streetpulse.controller;
 
 import com.streetpulse.streetpulse.model.User;
 import com.streetpulse.streetpulse.repository.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,39 +16,34 @@ public class AuthController {
         this.repo = repo;
     }
 
+    // ---------- LOGIN ----------
     @PostMapping("/login")
-    public User login(@RequestBody User req) {
+    public ResponseEntity<?> login(@RequestBody User req) {
 
         User user = repo.findByEmail(req.getEmail());
 
         if (user == null) {
-            System.out.println("Email not found");
-            return null;
+            return ResponseEntity.status(404).body("Email not found");
         }
 
-        System.out.println("DB password: " + user.getPassword());
-        System.out.println("Input password: " + req.getPassword());
-
-        if (!user.getPassword().trim().equals(req.getPassword().trim())) {
-            System.out.println("Password mismatch");
-            return null;
+        if (!user.getPassword().equals(req.getPassword())) {
+            return ResponseEntity.status(401).body("Invalid password");
         }
 
-        System.out.println("Login successful for: " + user.getEmail());
-        return user;
+        return ResponseEntity.ok(user);
     }
-    @PostMapping("/register")
-    public User register(@RequestBody User user) {
 
-        // check if email already exists
+    // ---------- REGISTER ----------
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody User user) {
+
         User existing = repo.findByEmail(user.getEmail());
         if (existing != null) {
-            return null;   // email already used
+            return ResponseEntity.status(409).body("Email already exists");
         }
 
-        // save new user
-        return repo.save(user);
+        User saved = repo.save(user);
+        return ResponseEntity.ok(saved);
     }
-
-
 }
+

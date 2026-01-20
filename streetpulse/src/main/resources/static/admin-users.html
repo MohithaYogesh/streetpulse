@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Users</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-bg">
+
+<div class="form-box">
+    <h2>All Users</h2>
+
+    <table border="1" width="100%" id="userTable">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </table>
+
+    <br>
+    <a href="admin-dashboard.html">⬅ Back to Dashboard</a>
+</div>
+
+<script>
+    fetch("/admin/users")
+        .then(r => r.json())
+        .then(data => {
+            let table = document.getElementById("userTable");
+
+            data.forEach(u => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+            <td>${u.id}</td>
+            <td>${u.name}</td>
+            <td>${u.role}</td>
+            <td>${u.active ? 'Active' : 'Disabled'}</td>
+            <td>
+              <button onclick="toggleUser(${u.id})">
+                Toggle Active
+              </button>
+            </td>
+          `;
+                table.appendChild(row);
+            });
+        });
+
+    function toggleUser(id) {
+        fetch(`/admin/users/${id}/toggle`, {
+            method: "PUT"
+        }).then(() => location.reload());
+    }
+</script>
+
+</body>
+</html>
